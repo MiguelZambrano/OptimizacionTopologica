@@ -35,12 +35,12 @@ Uh = reshape(U(1:2:2*(nely+1)*(nelx+1)),nely+1,nelx+1);
 Uv = reshape(U(2:2:2*(nely+1)*(nelx+1)),nely+1,nelx+1);
 %% PLOT
 [xx,yy] = meshgrid(1:nelx+1,1:nely+1);
-set(gcf,'Position',get(0,'Screensize'));
+%set(gcf,'Position',get(0,'Screensize'));
 figure(1);
 quiver(xx,yy,Uh,Uv);
-set(gcf,'Position',get(0,'Screensize'));
+%set(gcf,'Position',get(0,'Screensize'));
 figure(2);
 surf(Uh);
-set(gcf,'Position',get(0,'Screensize'));
+%set(gcf,'Position',get(0,'Screensize'));
 figure(3);
 surf(Uv);
