@@ -1,9 +1,5 @@
 # Ejercicios de Optimización Topológica
+(Ejercicios de muestra en MATLAB/Octave)
 
-MBB
-
-Bicicleta
-
-Distribución de calor
-
-MEMS
+Clase de Modelación Numérica.
+Viernes, 18 de mayo de 2018.
