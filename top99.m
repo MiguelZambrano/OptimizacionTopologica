@@ -28,7 +28,7 @@ while change > 0.01
   [x]    = OC(nelx,nely,x,volfrac,dc); 
 % PRINT RESULTS
   change = max(max(abs(x-xold)));
-  disp([' It.: ' sprintf('%4i',loop) ' Obj.: ' sprintf('%10.4f',c) ...
+  disp([' It.: ' sprintf('%4i',loop) ' Obj.: ' sprintf('%10.4f',full(c)) ...
        ' Vol.: ' sprintf('%6.3f',sum(sum(x))/(nelx*nely)) ...
         ' ch.: ' sprintf('%6.3f',change )])
 % PLOT DENSITIES  
@@ -78,8 +78,8 @@ end
 % DEFINE LOADS AND SUPPORTS (HALF MBB-BEAM)
 din = floor((2*(nely+1)-1)/2);
 dout = 2*(nely+1)*nelx+floor((2*(nely+1)-1)/2);
-F(din,1) = 1;
-F(dout,2) = -1;
+F(din,1) = -1;
+F(dout,2) = 1;
 K(din,din) = K(din,din) + 0.1;
 K(dout,dout) = K(dout,dout) + 0.1;
 fixeddofs   = union(1,2*(nely+1)-1);
