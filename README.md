@@ -1,5 +1,30 @@
-# Ejercicios de Optimización Topológica
-(Ejercicios de muestra en MATLAB/Octave)
+# Ejemplos de Optimización Topológica en MATLAB
 
-Clase de Modelación Numérica.
-Viernes, 18 de mayo de 2018.
+FEM/heat2D and elasticity2D
+
+MBB_complete.m
+
+MBB.m (Varios ejercicios)
+
+bicycle_single_load.m
+
+bridge.m
+
+Lbracket.m
+
+multiple_loads.m
+
+inverter.m
+
+robust_MBB.m
+
+heat_sink.m
+
+square.m
+
+top3d.m
+
+Two Levels Preconditioners (in progress)
+Elasticity basis
+Heat basis
+Random heat basis

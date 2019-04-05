@@ -1,26 +1,35 @@
 %%%% AN 88 LINE TOPOLOGY OPTIMIZATION CODE Nov, 2010 %%%%
-%function top88(nelx,nely,volfrac,penal,rmin,ft)
-nelx=120; nely=20; volfrac=0.5; penal=3.0; rmin=1.5; ft=1;
+nelx=100;
+nely=100;
+volfrac=0.45;
+penal=3; 
+rmin=0.4;
+ft=2;
 %% MATERIAL PROPERTIES
 E0 = 1;
-Emin = 1e-9;
-nu = 0.3;
+Emin = 0.5;
 %% PREPARE FINITE ELEMENT ANALYSIS
-A11 = [12  3 -6 -3;  3 12  3  0; -6  3 12 -3; -3  0 -3 12];
-A12 = [-6 -3  0  3; -3 -6 -3 -6;  0 -3 -6  3;  3 -6  3 -6];
-B11 = [-4  3 -2  9;  3 -4 -9  4; -2 -9 -4 -3;  9  4 -3 -4];
-B12 = [ 2 -3  4 -9; -3  2  9 -2;  4  9  2  3; -9 -2  3  2];
-KE = 1/(1-nu^2)/24*([A11 A12;A12' A11]+nu*[B11 B12;B12' B11]);
+KE = [4 -1 -2 -1; -1 4 -1 -2; -2 -1 4 -1; -1 -2 -1 4];
 nodenrs = reshape(1:(1+nelx)*(1+nely),1+nely,1+nelx);
-edofVec = reshape(2*nodenrs(1:end-1,1:end-1)+1,nelx*nely,1);
-edofMat = repmat(edofVec,1,8)+repmat([0 1 2*nely+[2 3 0 1] -2 -1],nelx*nely,1);
-iK = reshape(kron(edofMat,ones(8,1))',64*nelx*nely,1);
-jK = reshape(kron(edofMat,ones(1,8))',64*nelx*nely,1);
+edofVec = reshape(nodenrs(1:end-1,1:end-1)+1,nelx*nely,1);
+edofMat = repmat(edofVec,1,4)+repmat([0 nely+1 nely -1],nelx*nely,1);
+iK = reshape(kron(edofMat,ones(4,1))',16*nelx*nely,1);
+jK = reshape(kron(edofMat,ones(1,4))',16*nelx*nely,1);
 % DEFINE LOADS AND SUPPORTS (HALF MBB-BEAM)
-F = sparse(nelx*(nely+1)+2,1,-1,2*(nely+1)*(nelx+1),1);
-U = zeros(2*(nely+1)*(nelx+1),1);
-fixeddofs = union(2*nely+2,2*(nelx+1)*(nely+1));
-alldofs = 1:2*(nely+1)*(nelx+1);
+A = reshape(1:(nelx+1)*(nely+1),nelx+1,nely+1);
+A1 = A(21:31,31:71);
+A2 = A(71:81,31:71);
+A3 = A(21:81,21:31);
+A4 = A(21:81,71:81);
+loc = [A1(:);A2(:);A3(:);A4(:)];
+F = sparse(loc,ones(size(loc)),0.01*ones(size(loc)),(nely+1)*(nelx+1),1);
+%F = ones((nely+1)*(nelx+1),1);
+
+U = zeros((nely+1)*(nelx+1),1);
+fixeddofs = union([1:(nely+1),1:(nely+1):(nelx+1)*(nely+1),(nely+1):(nely+1):(nelx+1)*(nely+1)],(nely+1)*(nelx)+1:(nelx+1)*(nely+1));  %Dirichlet boundary
+U(fixeddofs) = 0;
+Upd = U;
+alldofs = 1:(nely+1)*(nelx+1);
 freedofs = setdiff(alldofs,fixeddofs);
 %% PREPARE FILTER
 iH = ones(nelx*nely*(2*(ceil(rmin)-1)+1)^2,1);
@@ -43,27 +52,34 @@ for i1 = 1:nelx
 end
 H = sparse(iH,jH,sH);
 Hs = sum(H,2);
+%% ACTIVE AND PASSIVE ELEMENTS
+passive = zeros(nely,nelx);
+passive(21:30,31:70) = 2;
+passive(71:80,31:70) = 2;
+passive(21:80,21:30) = 2;
+passive(21:80,71:80) = 2;
 %% INITIALIZE ITERATION
 x = repmat(volfrac,nely,nelx);
 xPhys = x;
 loop = 0;
 change = 1;
-obj = NaN(200,1);
-changeplot = NaN(200,1);
-volume = NaN(200,1);
 %% START ITERATION
-while change > 0.01
+while change > 0.01 && loop < 300
   loop = loop + 1;
   %% FE-ANALYSIS
-  sK = reshape(KE(:)*(Emin+xPhys(:)'.^penal*(E0-Emin)),64*nelx*nely,1);
+  sK = reshape(KE(:)*(Emin+xPhys(:)'.^penal*(E0-Emin)),16*nelx*nely,1);
   K = sparse(iK,jK,sK); K = (K+K')/2;
-  U(freedofs) = K(freedofs,freedofs)\F(freedofs);
+  Fd = F-K*Upd;
+  U(freedofs) = K(freedofs,freedofs)\Fd(freedofs);
+  auxU = reshape(U,nely+1,nelx+1);
+  %figure(10)
+  %surf(auxU)
+  %pause(0.1)
   %% OBJECTIVE FUNCTION AND SENSITIVITY ANALYSIS
   ce = reshape(sum((U(edofMat)*KE).*U(edofMat),2),nely,nelx);
   c = sum(sum((Emin+xPhys.^penal*(E0-Emin)).*ce));
   dc = -penal*(E0-Emin)*xPhys.^(penal-1).*ce;
   dv = ones(nely,nelx);
-  obj(loop+1) = c;
   %% FILTERING/MODIFICATION OF SENSITIVITIES
   if ft == 1
     dc(:) = H*(x(:).*dc(:))./Hs./max(1e-3,x(:));
@@ -75,41 +91,25 @@ while change > 0.01
   l1 = 0; l2 = 1e9; move = 0.2;
   while (l2-l1)/(l1+l2) > 1e-3
     lmid = 0.5*(l2+l1);
-    xnew = max(0,max(x-move,min(1,min(x+move,x.*sqrt(-dc./dv/lmid)))));
+    xnew = max(0,max(x-move,min(1 ,min(x+move,x.*sqrt( (-dc./dv/lmid))))));
     if ft == 1
       xPhys = xnew;
     elseif ft == 2
       xPhys(:) = (H*xnew(:))./Hs;
     end
+    xPhys(passive==1) = 0;
+    xPhys(passive==2) = 1;
     if sum(xPhys(:)) > volfrac*nelx*nely, l1 = lmid; else, l2 = lmid; end
   end
   change = max(abs(xnew(:)-x(:)));
-  changeplot(loop+1) = change;
-  volume(loop+1) = mean(xPhys(:));
   x = xnew;
   %% PRINT RESULTS
   fprintf(' It.:%5i Obj.:%11.4f Vol.:%7.3f ch.:%7.3f\n',loop,c, ...
     mean(xPhys(:)),change);
   %% PLOT DENSITIES
+  figure(20)
   colormap(gray); imagesc(1-xPhys); caxis([0 1]); axis equal; axis off; drawnow;
 end
-%% EXTRA PLOTS
-obj(isnan(obj)) = [];
-changeplot(isnan(changeplot)) = [];
-volume(isnan(volume)) = [];
-
-figure;
-ax1 = subplot(3,1,1);
-plot(obj,'r');
-title(ax1,'Objective function')
-
-ax2 = subplot(3,1,2);
-plot(volume,'r');
-title(ax2,'Volume')
-
-ax3 = subplot(3,1,3);
-plot(changeplot,'r');
-title(ax3,'Change of volume')
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This Matlab code was written by E. Andreassen, A. Clausen, M. Schevenels,%
@@ -135,4 +135,3 @@ title(ax3,'Change of volume')
 % free from errors. Furthermore, we shall not be liable in any event       %
 % caused by the use of the program.                                        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-

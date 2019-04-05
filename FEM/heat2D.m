@@ -22,5 +22,5 @@ K = sparse(iK,jK,sK);
 U(freedofs) = K(freedofs,freedofs)\F(freedofs);
 U = reshape(U,nely+1,nelx+1);
 %% PLOT
-set(gcf,'Position',get(0,'Screensize'));
+%set(gcf,'Position',get(0,'Screensize'));
 surf(U);

@@ -1,6 +1,6 @@
 %%%% AN 88 LINE TOPOLOGY OPTIMIZATION CODE Nov, 2010 %%%%
 %function top88(nelx,nely,volfrac,penal,rmin,ft)
-nelx=120; nely=20; volfrac=0.5; penal=3.0; rmin=1.5; ft=1;
+nelx=100; nely=100; volfrac=0.3; penal=3.0; rmin=4; ft=2;
 %% MATERIAL PROPERTIES
 E0 = 1;
 Emin = 1e-9;
@@ -17,11 +17,13 @@ edofMat = repmat(edofVec,1,8)+repmat([0 1 2*nely+[2 3 0 1] -2 -1],nelx*nely,1);
 iK = reshape(kron(edofMat,ones(8,1))',64*nelx*nely,1);
 jK = reshape(kron(edofMat,ones(1,8))',64*nelx*nely,1);
 % DEFINE LOADS AND SUPPORTS (HALF MBB-BEAM)
-F = sparse(nelx*(nely+1)+2,1,-1,2*(nely+1)*(nelx+1),1);
+F = sparse(2*nelx*(nely+1)+(6/10)*2*(nely),1,1,2*(nely+1)*(nelx+1),1);
 U = zeros(2*(nely+1)*(nelx+1),1);
-fixeddofs = union(2*nely+2,2*(nelx+1)*(nely+1));
+fixeddofs = 2:2*(nely+1):(4/10)*2*(nelx+1)*(nely+1);
 alldofs = 1:2*(nely+1)*(nelx+1);
 freedofs = setdiff(alldofs,fixeddofs);
+passive = zeros(nely,nelx);
+passive(1:(60/100)*nely,ceil((39/100)*nelx):nelx) = 1;
 %% PREPARE FILTER
 iH = ones(nelx*nely*(2*(ceil(rmin)-1)+1)^2,1);
 jH = ones(size(iH));
@@ -82,6 +84,8 @@ while change > 0.01
       xPhys(:) = (H*xnew(:))./Hs;
     end
     if sum(xPhys(:)) > volfrac*nelx*nely, l1 = lmid; else, l2 = lmid; end
+    xPhys(passive==1) = 0;
+    xPhys(passive==2) = 1;
   end
   change = max(abs(xnew(:)-x(:)));
   changeplot(loop+1) = change;
