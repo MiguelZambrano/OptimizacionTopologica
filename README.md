@@ -1,30 +1,36 @@
 # Ejemplos de Optimización Topológica en MATLAB
 
-FEM/heat2D and elasticity2D
+### Basados en el código de: "Efficient topology optimization in MATLAB using 88 lines of code"
 
-MBB_complete.m
+#### Elementos finitos para calor y elasticidad en 2D
+* `FEM/heat2D and elasticity2D`
 
-MBB.m (Varios ejercicios)
+* `MBB_complete.m`
 
-bicycle_single_load.m
+* `MBB.m (Varios ejercicios)`
 
-bridge.m
+* `bicycle_single_load.m`
 
-Lbracket.m
+* `bridge.m`
 
-multiple_loads.m
+* `Lbracket.m`
 
-inverter.m
+* `multiple_loads.m`
 
-robust_MBB.m
+* `inverter.m`
 
-heat_sink.m
+* `robust_MBB.m`
 
-square.m
+* `heat_sink.m`
 
-top3d.m
+* `square.m`
 
-Two Levels Preconditioners (in progress)
-Elasticity basis
-Heat basis
-Random heat basis
+* `top3d.m`
+
+### Two Levels Preconditioners (in progress)
+
+* Elasticity basis
+
+* Heat basis
+
+* Random heat basis
