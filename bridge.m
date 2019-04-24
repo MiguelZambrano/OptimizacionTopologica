@@ -91,27 +91,30 @@ while change > 0.01
   %% PRINT RESULTS
   fprintf(' It.:%5i Obj.:%11.4f Vol.:%7.3f ch.:%7.3f\n',loop,c, ...
     mean(xPhys(:)),change);
+  if exist('OCTAVE_VERSION', 'builtin') ~= 0
+    fflush(stdout);
+  end
   %% PLOT DENSITIES
   colormap(gray); imagesc(1-xPhys); caxis([0 1]); axis equal; axis off; drawnow;
 end
 %% EXTRA PLOTS
-obj(isnan(obj)) = [];
-changeplot(isnan(changeplot)) = [];
-volume(isnan(volume)) = [];
-
-figure;
-ax1 = subplot(3,1,1);
-plot(obj,'r');
-title(ax1,'Objective function')
-
-ax2 = subplot(3,1,2);
-plot(volume,'r');
-title(ax2,'Volume')
-
-ax3 = subplot(3,1,3);
-plot(changeplot,'r');
-title(ax3,'Change of volume')
+%obj(isnan(obj)) = [];
+%changeplot(isnan(changeplot)) = [];
+%volume(isnan(volume)) = [];
 %
+%figure;
+%ax1 = subplot(3,1,1);
+%plot(obj,'r');
+%title(ax1,'Objective function')
+%
+%ax2 = subplot(3,1,2);
+%plot(volume,'r');
+%title(ax2,'Volume')
+%
+%ax3 = subplot(3,1,3);
+%plot(changeplot,'r');
+%title(ax3,'Change of volume')
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This Matlab code was written by E. Andreassen, A. Clausen, M. Schevenels,%
 % B. S. Lazarov and O. Sigmund,  Department of Solid  Mechanics,           %

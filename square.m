@@ -106,6 +106,9 @@ while change > 0.01 && loop < 300
   %% PRINT RESULTS
   fprintf(' It.:%5i Obj.:%11.4f Vol.:%7.3f ch.:%7.3f\n',loop,c, ...
     mean(xPhys(:)),change);
+  if exist('OCTAVE_VERSION', 'builtin') ~= 0
+    fflush(stdout);
+  end
   %% PLOT DENSITIES
   figure(20)
   colormap(gray); imagesc(1-xPhys); caxis([0 1]); axis equal; axis off; drawnow;
