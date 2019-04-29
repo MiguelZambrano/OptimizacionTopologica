@@ -29,3 +29,7 @@ octave-workspace
 
 # Images
 *.png
+
+# MMA files
+mmasub.m
+subsolv.m
