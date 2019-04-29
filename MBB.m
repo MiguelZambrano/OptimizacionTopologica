@@ -1,6 +1,6 @@
 %%%% AN 88 LINE TOPOLOGY OPTIMIZATION CODE Nov, 2010 %%%%
-%function top88(nelx,nely,volfrac,penal,rmin,ft)
-nelx=60; nely=20; volfrac=0.5; penal=3.0; rmin=2.4; ft=1;
+function MBB(nelx,nely,volfrac,penal,rmin,ft)
+%nelx=60; nely=20; volfrac=0.5; penal=3.0; rmin=2.4; ft=1;
 %% MATERIAL PROPERTIES
 E0 = 1;
 Emin = 1e-9;    %Minimum Young modulus
