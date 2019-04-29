@@ -107,6 +107,9 @@ while change > 0.01
   %% PRINT RESULTS
   fprintf(' It.:%5i Obj.:%11.4f Vol.:%7.3f ch.:%7.3f\n',loop,c, ...
     mean(xPhys(:)),change);
+  if exist('OCTAVE_VERSION', 'builtin') ~= 0
+    fflush(stdout);
+  end
   %% PLOT DENSITIES
   colormap(gray); imagesc(1-xPhys); caxis([0 1]); axis equal; axis off; drawnow;
   %% UPDATE HEAVISIDE REGULARIZATION PARAMETER
@@ -118,25 +121,25 @@ while change > 0.01
   end
 end
 %% EXTRA PLOTS
-obj(isnan(obj)) = [];
-changeplot(isnan(changeplot)) = [];
-volume(isnan(volume)) = [];
-xaxisplot = 1:1:size(obj,1);
-
-figure;
-ax1 = subplot(3,1,1);
-plot(obj,'r');
-title(ax1,'Objective function')
-
-ax2 = subplot(3,1,2);
-plot(xaxisplot,volume,'r');
-title(ax2,'Volume')
-
-ax3 = subplot(3,1,3);
-plot(xaxisplot,changeplot,'r');
-title(ax3,'Change of volume')
-
-xlim([ax1 ax2 ax3],[1 size(obj,1)])
+% obj(isnan(obj)) = [];
+% changeplot(isnan(changeplot)) = [];
+% volume(isnan(volume)) = [];
+% xaxisplot = 1:1:size(obj,1);
+% 
+% figure;
+% ax1 = subplot(3,1,1);
+% plot(obj,'r');
+% title(ax1,'Objective function')
+% 
+% ax2 = subplot(3,1,2);
+% plot(xaxisplot,volume,'r');
+% title(ax2,'Volume')
+% 
+% ax3 = subplot(3,1,3);
+% plot(xaxisplot,changeplot,'r');
+% title(ax3,'Change of volume')
+% 
+% xlim([ax1 ax2 ax3],[1 size(obj,1)])
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This Matlab code was written by E. Andreassen, A. Clausen, M. Schevenels,%
